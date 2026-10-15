@@ -1,0 +1,8 @@
+{
+  "rooms": {"zone_a": "sensor.zone_a_activity", "zone_b": "sensor.zone_b_activity"},
+  "receivers": [
+    {"item_id": "sample_a", "room": "zone_a", "entity_id": "binary_sensor.sample_a", "sensor": "sensor.sample_a_activity"},
+    {"item_id": "sample_b", "room": "zone_b", "entity_id": "binary_sensor.sample_b", "sensor": "sensor.sample_b_activity"}
+  ],
+  "ttl_seconds": 10
+}

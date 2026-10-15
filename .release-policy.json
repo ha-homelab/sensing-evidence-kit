@@ -1,0 +1,67 @@
+{
+  "repository": "ha-homelab/sensing-evidence-kit",
+  "mode": "release",
+  "default_branch": "main",
+  "visibility": "public",
+  "version_file": "version",
+  "validation_workflows": [
+    "tests.yml",
+    "security.yml"
+  ],
+  "artifact_pattern": "release-assets*",
+  "local_checks": [
+    "uv run --frozen --extra dev --extra record sh scripts/check.sh"
+  ],
+  "notes": [
+    "Examples and screenshots are synthetic. Site configuration, credentials, real observations and private Git history are excluded.",
+    "Offline tests cover simulated boundaries. A beta release does not establish compatibility with every camera, network or Home Assistant installation."
+  ],
+  "release_notes": "CHANGELOG.md",
+  "single_entry_ci": true,
+  "versioning": {
+    "schema": 1,
+    "promotion": "promote-bytes",
+    "files": [
+      {
+        "path": "version",
+        "format": "text",
+        "value": "package"
+      },
+      {
+        "path": "pyproject.toml",
+        "format": "toml",
+        "field": "project.version",
+        "value": "package"
+      },
+      {
+        "path": "src/sensing_evidence/__init__.py",
+        "format": "python",
+        "field": "__version__",
+        "value": "package"
+      },
+      {
+        "path": "uv.lock",
+        "format": "uv-lock",
+        "package": "sensing-evidence-kit",
+        "value": "package"
+      }
+    ],
+    "artifacts": [
+      {
+        "path": "*.whl",
+        "format": "wheel",
+        "package": "sensing-evidence-kit",
+        "value": "package"
+      },
+      {
+        "path": "*.tar.gz",
+        "format": "sdist",
+        "package": "sensing-evidence-kit",
+        "value": "package"
+      }
+    ],
+    "toolkit_revision": "ece79d1b1ca40d3068d373e515daf58115489a22"
+  },
+  "toolkit_revision": "ece79d1b1ca40d3068d373e515daf58115489a22",
+  "sign_releases": true
+}

@@ -1,0 +1,9 @@
+include version LICENSE README.md CHANGELOG.md SECURITY.md CONTRIBUTING.md THIRD_PARTY_NOTICES.md
+recursive-include docs *.md *.html *.png
+recursive-include examples *.md *.json
+recursive-include tests *.py
+recursive-include scripts *.py *.sh
+recursive-include LICENSES *.txt
+
+include RELEASING.md .release-policy.json uv.lock
+recursive-include .github *.py *.yml *.yaml *.txt

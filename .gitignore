@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.ruff_cache/
+.coverage
+htmlcov/
+.env
+.env.*
+!.env.example
+*.local.*
+.DS_Store
+
+# Evidence is private by default; demo captures can always be regenerated.
+sessions/
+*-session/
+demo-output/
