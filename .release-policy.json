@@ -52,14 +52,14 @@
     ],
     "artifacts": [
       {
-        "path": "*.whl",
+        "path": "sensing_evidence_kit-*.whl",
         "format": "wheel",
         "package": "sensing-evidence-kit",
         "value": "package",
         "ecosystem": "pep440"
       },
       {
-        "path": "*.tar.gz",
+        "path": "sensing_evidence_kit-*.tar.gz",
         "format": "sdist",
         "package": "sensing-evidence-kit",
         "value": "package",
