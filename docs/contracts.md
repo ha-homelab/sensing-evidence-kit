@@ -6,7 +6,7 @@ The public Python package uses `schema_version: 1`. Compatible readers may accep
 
 Metadata contains a session ID, opaque host ID, OS boot ID, offset-aware UTC anchor, integer `monotonic_ns` anchor and finite clock tolerance no greater than 2 seconds. Every record must agree on session/host/boot identity. UTC elapsed time and monotonic elapsed time must remain within tolerance. Naive timestamps, future request starts, negative/noninteger clocks, clock discontinuities and out-of-order streams are rejected.
 
-Live identities are local to macOS or Linux. Monotonic clocks from separate hosts or boots cannot be joined. A recorded clock-offset uncertainty is informational; this beta does not estimate or correct clock offsets. Strict JSON parsing rejects duplicate object keys, NaN, infinity and overflowing numeric values. JSONL records require nonblank newline-terminated lines. File readers cap each evidence file at 256 MiB.
+Live identities are local to macOS or Linux. Monotonic clocks from separate hosts or boots cannot be joined. A recorded clock-offset uncertainty is informational; the kit does not estimate or correct clock offsets. Strict JSON parsing rejects duplicate object keys, NaN, infinity and overflowing numeric values. JSONL records require nonblank newline-terminated lines. File readers cap each evidence file at 256 MiB.
 
 Metadata pins the complete adapter configuration and resolver implementation with SHA-256. The recorder fingerprint is retained for manual provenance review. Samples pin the binding list, model fingerprint and inventory revision. Binding or model changes invalidate a session. The package writes reports exclusively and never overwrites originals.
 

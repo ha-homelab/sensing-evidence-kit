@@ -1,10 +1,10 @@
 # Sensing Evidence Kit
 
-**Public beta · Characterization, not automatic validation.**
+**Characterization, not automatic validation.**
 
 Capture selected Home Assistant observations, record independent operator labels and measure disagreements and unknown time. An optional offline joint report checks the integrity and time alignment of consumer and producer evidence. Every report keeps `validation_decision: not_evaluated`.
 
-Download versioned packages and verification files from [Releases](https://github.com/ha-homelab/sensing-evidence-kit/releases).
+Select a tag from [Releases](https://github.com/ha-homelab/sensing-evidence-kit/releases): `-beta.N` identifies a beta, `-rc.N` a release candidate, and a tag without a prerelease suffix a stable software release. Verify the release's [signed asset inventory](docs/release-signatures.md) for that tag before installation. Stable software does not establish validated occupancy detection or sensing accuracy.
 
 ![Synthetic evidence demonstration](docs/synthetic-demo.png)
 
@@ -43,7 +43,7 @@ Live capture reads Home Assistant through its WebSocket API. It never calls devi
 - Checking same-host producer/consumer sample-window overlap without claiming exact event latency.
 - Writing and testing another adapter against a shared reporting engine.
 
-The built-in adapter characterizes ordinary binary entities as `presence`, `quiet` or `unknown`. It does not infer motion from a binary presence sensor. Hardware calibration, coverage certification, safety applications and automated promotion of a detector are outside this beta.
+The built-in adapter characterizes ordinary binary entities as `presence`, `quiet` or `unknown`. It does not infer motion from a binary presence sensor. Hardware calibration, coverage certification, safety applications and automated promotion of a detector are outside this package's scope.
 
 ## Documentation
 
@@ -52,7 +52,7 @@ The built-in adapter characterizes ordinary binary entities as `presence`, `quie
 - [Evidence contract and interpretation](docs/contracts.md)
 - [Adapter API and integration](docs/adapters.md)
 - [Troubleshooting](docs/troubleshooting.md)
-- [Beta limitations](docs/beta.md)
+- [Scope and limitations](docs/beta.md)
 - [Security](SECURITY.md), [contributing](CONTRIBUTING.md), [changelog](CHANGELOG.md)
 
 ## Develop and package
