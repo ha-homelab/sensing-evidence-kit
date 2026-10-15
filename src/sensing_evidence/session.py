@@ -143,7 +143,7 @@ def validate_anchor(metadata):
     if type(metadata.get("monotonic_ns")) is not int or not 0 <= metadata["monotonic_ns"] <= 2**64 - 1:
         raise ValueError("Invalid monotonic clock anchor")
     tolerance = metadata.get("clock_tolerance_seconds")
-    if type(tolerance) not in (int, float) or not math.isfinite(tolerance) or not 0 < tolerance <= 2:
+    if type(tolerance) not in (int, float) or not 0 < tolerance <= 2 or not math.isfinite(tolerance):
         raise ValueError("Clock tolerance must be finite and in (0, 2] seconds")
 
 
@@ -407,7 +407,7 @@ def verify_contract(metadata, adapter):
     validate_anchor(metadata)
     for key, lower, upper in (("transition_seconds", 0, 300), ("max_sample_gap_seconds", 0.001, 60)):
         value = metadata.get(key)
-        if type(value) not in (int, float) or not math.isfinite(value) or not lower <= value <= upper:
+        if type(value) not in (int, float) or not lower <= value <= upper or not math.isfinite(value):
             raise ValueError("Invalid transition or sample-gap limit")
     if (
         metadata.get("schema_version") != 1
@@ -431,10 +431,16 @@ def as_states(sample):
             or not isinstance(value.get("attributes", {}), dict)
         ):
             raise ValueError("Invalid state record")
+        reported = timestamp(value.get("last_reported"))
+        captured = timestamp(sample.get("observed_utc"))
+        # A timestamp invalid at receipt must not become valid as the report
+        # projects this snapshot forward. Only a new sample can refresh it.
+        if reported is None or captured is None or reported > captured:
+            reported = datetime.min.replace(tzinfo=timezone.utc)
         result[key] = SimpleNamespace(
             state=value["state"],
             attributes=value.get("attributes", {}),
-            last_reported=timestamp(value.get("last_reported")) or datetime.min.replace(tzinfo=timezone.utc),
+            last_reported=reported,
         )
     return result
 

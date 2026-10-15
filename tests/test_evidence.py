@@ -65,7 +65,7 @@ class AdapterTests(unittest.TestCase):
         adapter = EntityAdapter(config)
         config["receivers"][0]["room"] = "changed"
         self.assertEqual(adapter.CONFIG["receivers"][0]["room"], "zone_a")
-        for ttl in (0, -1, 301, True, float("nan"), float("inf")):
+        for ttl in (0, -1, 301, 10**400, True, float("nan"), float("inf")):
             config = configuration()
             config["ttl_seconds"] = ttl
             with self.subTest(ttl=ttl), self.assertRaises(ValueError):
@@ -120,6 +120,7 @@ class ClockAndInputTests(FixtureTest):
             ("clock_tolerance_seconds", float("inf")),
             ("clock_tolerance_seconds", True),
             ("clock_tolerance_seconds", 3),
+            ("clock_tolerance_seconds", 10**400),
             ("monotonic_ns", True),
             ("monotonic_ns", -1),
             ("host_id", ""),
@@ -170,6 +171,9 @@ class ClockAndInputTests(FixtureTest):
                     session.report(self.metadata, rows, self.labels, self.adapter)
 
     def test_contract_and_bindings_are_checked(self):
+        for key in ("transition_seconds", "max_sample_gap_seconds"):
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                session.report({**self.metadata, key: 10**400}, self.capture, self.labels, self.adapter)
         for key in ("resolver_sha256", "contract_sha256"):
             metadata = {**self.metadata, key: "f" * 64}
             with self.subTest(key=key), self.assertRaises(ValueError):
@@ -213,6 +217,16 @@ class ClockAndInputTests(FixtureTest):
 
 
 class CharacterizationTests(FixtureTest):
+    def test_future_timestamp_never_becomes_known_in_projected_interval(self):
+        state = self.capture[0]["states"]["binary_sensor.sample_a"]
+        captured = session.timestamp(self.capture[0]["observed_utc"])
+        state["last_reported"] = (captured + timedelta(seconds=0.5)).isoformat()
+        result = self.report()
+        values = result["trials"][0]["observations"]["sensor.zone_a_activity"]
+        self.assertEqual(values["known_seconds"], 14)
+        self.assertEqual(values["unknown_seconds"], 6)
+        self.assertEqual(result["diagnostic_snapshot_counts"]["sensor.zone_a_activity"]["unknown"], 3)
+
     def test_synthetic_metrics_preserve_unknown_time(self):
         result = self.report()
         values = result["trials"][0]["observations"]["sensor.zone_a_activity"]
@@ -265,6 +279,17 @@ class CharacterizationTests(FixtureTest):
 
 
 class JointTests(FixtureTest):
+    def test_boundary_after_terminal_is_rejected(self):
+        rows = self.producer_rows()
+        boundary = {**rows[-1], "kind": "runtime_boundary"}
+        boundary["monotonic_ns"] += 1_000_000_000
+        boundary["observed_utc"] = (
+            session.timestamp(boundary["observed_utc"]) + timedelta(seconds=1)
+        ).isoformat()
+        self.update_producer([*rows[:-1], boundary, rows[-1]])
+        with self.assertRaisesRegex(ValueError, "terminal"):
+            joint.analyze(self.files, self.adapter)
+
     def test_complete_diagnostic_never_validates_coverage(self):
         result = joint.analyze(self.files, self.adapter)
         self.assertEqual(result["diagnostic_status"], "complete")

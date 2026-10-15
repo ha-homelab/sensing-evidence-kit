@@ -48,6 +48,7 @@ The built-in adapter characterizes ordinary binary entities as `presence`, `quie
 ## Documentation
 
 - [Tutorial and private recording](docs/tutorial.md)
+- [Reproducibility, privacy and upgrades](docs/reproducibility.md)
 - [Evidence contract and interpretation](docs/contracts.md)
 - [Adapter API and integration](docs/adapters.md)
 - [Troubleshooting](docs/troubleshooting.md)
