@@ -131,9 +131,13 @@ class ClockAndInputTests(FixtureTest):
             with self.subTest(key=key, value=value), self.assertRaises(ValueError):
                 session.checked_time(self.capture[0], metadata)
 
-    def test_deep_json_is_rejected_as_invalid_evidence(self):
-        with self.assertRaisesRegex(ValueError, "nesting"):
-            session.strict_json("[" * 100_000 + "0" + "]" * 100_000)
+    def test_parser_recursion_failure_is_invalid_evidence(self):
+        # Parser recursion limits differ across Python builds and platforms.
+        with (
+            patch.object(session.json, "loads", side_effect=RecursionError),
+            self.assertRaisesRegex(ValueError, "nesting"),
+        ):
+            session.strict_json("{}")
 
     def test_foreign_host_boot_session_and_discontinuities_rejected(self):
         for key, value in (
