@@ -159,7 +159,10 @@ def analyze(files, adapter):
         ),
         "producer_sample_count_mismatch",
     )
-    require(not ps or terminal["monotonic_ns"] >= ps[-1]["monotonic_ns"], "terminal_precedes_last_sample")
+    require(
+        all(row["monotonic_ns"] <= terminal["monotonic_ns"] for row in pc),
+        "terminal_precedes_producer_record",
+    )
     require(summary["monotonic_ns"] >= terminal["monotonic_ns"], "summary_precedes_terminal")
     for key in ("recording_complete", "capture_status", "reasons", "validation_decision"):
         require(terminal.get(key) == summary.get(key), "producer_terminal_summary_disagreement")

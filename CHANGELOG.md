@@ -12,6 +12,12 @@ Initial public beta:
 
 All reports retain `validation_decision: not_evaluated`. No live evidence or private inventory is included.
 
+Release candidate hardening:
+
+- Keep future-dated state timestamps unknown for the whole projected sample interval instead of adding false known time.
+- Reject producer records timestamped after their terminal record, and reject extreme numeric limits without integer-conversion failures.
+- Document pinned environments, private evidence preservation, software upgrades, rollback and the limits of filtering and integrity hashes.
+
 ### Upgrade
 
 Install the selected beta wheel in an isolated Python 3.11 or newer environment. Existing private integrations should map their entity inventory explicitly and preserve raw captures before importing them. This initial public beta does not migrate private configuration or change the meaning of prior observations.

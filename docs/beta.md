@@ -1,4 +1,4 @@
-# Beta scope
+# Scope and limitations
 
 This package provides a standard-library-only reporting engine, a binary-entity adapter, optional read-only Home Assistant recording, and an optional same-host producer/consumer integrity report. Synthetic tests cover freshness expiry, restored/future data, malformed JSON, clock identities/discontinuities, binding fingerprints, independent label closure, byte hashes, stream completion and node mappings.
 

@@ -27,7 +27,7 @@ class EntityAdapter:
             for k, v in rooms.items()
         ):
             raise ValueError("Invalid room or output entity identifier")
-        if type(ttl) not in (int, float) or not math.isfinite(ttl) or not 0 < ttl <= 300:
+        if type(ttl) not in (int, float) or not 0 < ttl <= 300 or not math.isfinite(ttl):
             raise ValueError("ttl_seconds must be finite and between zero and 300")
         markers, outputs, inputs, nodes = set(), set(rooms.values()), set(), set()
         if len(outputs) != len(rooms):
