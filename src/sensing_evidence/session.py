@@ -90,9 +90,12 @@ def strict_json(text):
             invalid_constant(text)
         return value
 
-    return json.loads(
-        text, object_pairs_hook=pairs, parse_constant=invalid_constant, parse_float=finite_float
-    )
+    try:
+        return json.loads(
+            text, object_pairs_hook=pairs, parse_constant=invalid_constant, parse_float=finite_float
+        )
+    except RecursionError:
+        raise ValueError("Evidence JSON nesting exceeds the parser limit") from None
 
 
 def write_json(path, value):
