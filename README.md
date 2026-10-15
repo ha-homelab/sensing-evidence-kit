@@ -1,8 +1,10 @@
 # Sensing Evidence Kit
 
-**Public beta · 0.1.0b1 · Characterization, not automatic validation.**
+**Public beta · Characterization, not automatic validation.**
 
 Capture selected Home Assistant observations, record independent operator labels and measure disagreements and unknown time. An optional offline joint report checks the integrity and time alignment of consumer and producer evidence. Every report keeps `validation_decision: not_evaluated`.
+
+Download versioned packages and verification files from [Releases](https://github.com/ha-homelab/sensing-evidence-kit/releases).
 
 ![Synthetic evidence demonstration](docs/synthetic-demo.png)
 
