@@ -667,6 +667,7 @@ source = { editable = "." }
 
 [package.optional-dependencies]
 dev = [
+    { name = "aiohttp" },
     { name = "build" },
     { name = "pytest" },
     { name = "ruff" },
@@ -675,13 +676,16 @@ record = [
     { name = "aiohttp" },
 ]
 test = [
+    { name = "aiohttp" },
     { name = "pytest" },
     { name = "ruff" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "aiohttp", marker = "extra == 'dev'", specifier = "==3.14.3" },
     { name = "aiohttp", marker = "extra == 'record'", specifier = "==3.14.3" },
+    { name = "aiohttp", marker = "extra == 'test'", specifier = "==3.14.3" },
     { name = "build", marker = "extra == 'dev'", specifier = "==1.2.2.post1" },
     { name = "pytest", marker = "extra == 'dev'", specifier = "==9.0.3" },
     { name = "pytest", marker = "extra == 'test'", specifier = "==9.0.3" },

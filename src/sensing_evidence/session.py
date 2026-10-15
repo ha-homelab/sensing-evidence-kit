@@ -282,6 +282,12 @@ def select_items(view, adapter):
     )
 
 
+async def reject_capture_redirect(_client, _context, params):
+    """Abort before a redirected socket can request the Home Assistant token."""
+    params.response.close()
+    raise ValueError("Home Assistant redirects are not allowed")
+
+
 async def capture(args, adapter):
     try:
         import aiohttp
@@ -303,7 +309,11 @@ async def capture(args, adapter):
     verify_contract(metadata, adapter)
     checked_time(new_record(metadata), metadata)
     token = os.environ.get("HA_TOKEN")
-    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=20)) as client:
+    trace = aiohttp.TraceConfig()
+    trace.on_request_redirect.append(reject_capture_redirect)
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=20), trace_configs=[trace]
+    ) as client:
         if not token:
             if not hasattr(adapter, "access_token"):
                 raise ValueError("Set HA_TOKEN in the environment for read-only recording")

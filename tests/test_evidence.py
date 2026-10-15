@@ -410,7 +410,7 @@ class CaptureTests(FixtureTest):
             client_context = AsyncMock()
             client_context.__aenter__.return_value = client
             fake_aiohttp = SimpleNamespace(
-                ClientSession=Mock(return_value=client_context), ClientTimeout=Mock()
+                ClientSession=Mock(return_value=client_context), ClientTimeout=Mock(), TraceConfig=Mock()
             )
             args = SimpleNamespace(directory=path, origin="https://ha.example.invalid", seconds=1, interval=1)
             base = {
@@ -462,3 +462,49 @@ class CaptureTests(FixtureTest):
     def test_read_failure_records_interruption(self):
         rows = self.run_capture(fail_read=True)
         self.assertEqual(rows[-1]["kind"], "interrupted")
+
+    def test_real_aiohttp_redirect_is_rejected_before_authentication(self):
+        import asyncio
+        from unittest.mock import Mock
+
+        import aiohttp
+
+        client_factory = aiohttp.ClientSession
+        base = {
+            key: self.capture[0][key]
+            for key in ("schema_version", "session_id", "host_id", "boot_id", "observed_utc", "monotonic_ns")
+        }
+        for status in (301, 302, 303, 307, 308):
+            for location in ("https://untrusted.example.invalid/api/websocket", "/another-websocket"):
+                with (
+                    self.subTest(status=status, location=location),
+                    tempfile.TemporaryDirectory() as directory,
+                ):
+                    path = Path(directory)
+                    session.write_json(path / "metadata.json", self.metadata)
+                    requests = []
+                    response = Mock(status=status, headers={"Location": location}, _raw_cookie_headers=())
+
+                    async def redirect(request, _handler):
+                        requests.append(request)
+                        response.url = request.url
+                        return response
+
+                    def client(**kwargs):
+                        return client_factory(**kwargs, middlewares=(redirect,))
+
+                    args = SimpleNamespace(
+                        directory=path, origin="https://ha.example.invalid", seconds=1, interval=1
+                    )
+                    with (
+                        patch.object(aiohttp, "ClientSession", side_effect=client),
+                        patch.dict("os.environ", {"HA_TOKEN": "synthetic-auth-only"}),
+                        patch.object(session, "new_record", return_value=base),
+                        self.assertRaisesRegex(ValueError, "redirects are not allowed"),
+                    ):
+                        asyncio.run(session.capture(args, self.adapter))
+                    self.assertEqual(len(requests), 1)
+                    self.assertEqual(str(requests[0].url), "wss://ha.example.invalid/api/websocket")
+                    self.assertNotIn("synthetic-auth-only", repr(dict(requests[0].headers)))
+                    response.close.assert_called_once()
+                    self.assertFalse((path / "capture.jsonl").exists())

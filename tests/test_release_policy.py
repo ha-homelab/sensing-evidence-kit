@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MIT
 """Exercise package metadata checks alongside the signed source inventory."""
 
+import base64
+import hashlib
 import importlib
 import io
 import json
@@ -8,12 +10,47 @@ from pathlib import Path
 import sys
 import tarfile
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 import zipfile
 
 
 class ReleasePolicyTest(unittest.TestCase):
+    def test_current_changelog_passes_the_publisher_contract(self):
+        root = Path(__file__).resolve().parents[1]
+        with patch.object(sys, "path", [str(root), *sys.path]):
+            release = importlib.import_module("scripts.release_control")
+        source = "a" * 40
+        expected = [f"contents/{name}?ref={source}" for name in (".release-policy.json", "CHANGELOG.md")]
+        calls = []
+
+        def api(path, method="GET", body=None):
+            self.assertEqual(method, "GET")
+            self.assertIsNone(body)
+            self.assertIn(path, expected)
+            calls.append(path)
+            name = path.split("?", 1)[0].removeprefix("contents/")
+            raw = (root / name).read_bytes()
+            return {
+                "type": "file",
+                "path": name,
+                "encoding": "base64",
+                "content": base64.b64encode(raw).decode(),
+                "size": len(raw),
+                "sha": hashlib.sha1(
+                    b"blob " + str(len(raw)).encode() + b"\0" + raw, usedforsecurity=False
+                ).hexdigest(),
+            }
+
+        github = SimpleNamespace(repo="ha-homelab/sensing-evidence-kit", api=api)
+        tag = "v" + (root / "version").read_text().strip() + "-beta.1"
+        rendered = release.release_notes(github, tag, source, "Synthetic build provenance.")
+        self.assertEqual(calls, expected)
+        self.assertIn("### Upgrade", rendered)
+        self.assertIn("### Security", rendered)
+        self.assertIn("Synthetic build provenance.", rendered)
+
     def test_source_archive_is_not_treated_as_a_python_distribution(self):
         root = Path(__file__).resolve().parents[1]
         with patch.object(sys, "path", [str(root), *sys.path]):
