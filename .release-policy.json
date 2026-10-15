@@ -25,25 +25,29 @@
       {
         "path": "version",
         "format": "text",
-        "value": "package"
+        "value": "package",
+        "ecosystem": "pep440"
       },
       {
         "path": "pyproject.toml",
         "format": "toml",
         "field": "project.version",
-        "value": "package"
+        "value": "package",
+        "ecosystem": "pep440"
       },
       {
         "path": "src/sensing_evidence/__init__.py",
         "format": "python",
         "field": "__version__",
-        "value": "package"
+        "value": "package",
+        "ecosystem": "pep440"
       },
       {
         "path": "uv.lock",
         "format": "uv-lock",
         "package": "sensing-evidence-kit",
-        "value": "package"
+        "value": "package",
+        "ecosystem": "pep440"
       }
     ],
     "artifacts": [
@@ -51,13 +55,15 @@
         "path": "*.whl",
         "format": "wheel",
         "package": "sensing-evidence-kit",
-        "value": "package"
+        "value": "package",
+        "ecosystem": "pep440"
       },
       {
         "path": "*.tar.gz",
         "format": "sdist",
         "package": "sensing-evidence-kit",
-        "value": "package"
+        "value": "package",
+        "ecosystem": "pep440"
       }
     ],
     "toolkit_revision": "ece79d1b1ca40d3068d373e515daf58115489a22"

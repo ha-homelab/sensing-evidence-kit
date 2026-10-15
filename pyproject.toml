@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sensing-evidence-kit"
-version = "0.1.0b1"
+version = "0.1.0"
 description = "Reproducible sensing observations, independent labels and conservative characterization"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -14,7 +14,7 @@ authors = [{name = "HA Homelab contributors"}]
 dependencies = []
 
 [project.optional-dependencies]
-record = ["aiohttp==3.13.3"]
+record = ["aiohttp==3.14.3"]
 test = ["pytest==8.4.2", "ruff==0.16.5"]
 dev = ["build==1.2.2.post1", "ruff==0.16.5", "pytest==8.4.2"]
 
