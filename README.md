@@ -1,5 +1,7 @@
 # Sensing Evidence Kit
 
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/15580/badge)](https://www.bestpractices.dev/projects/15580)
+
 **Characterization, not automatic validation.**
 
 Capture selected Home Assistant observations, record independent operator labels and measure disagreements and unknown time. An optional offline joint report checks the integrity and time alignment of consumer and producer evidence. Every report keeps `validation_decision: not_evaluated`.
