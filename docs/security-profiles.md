@@ -12,7 +12,21 @@ Offline content fingerprints use Python's `hashlib.sha256`. These are consistenc
 
 The `record` extra enables aiohttp capture from one explicitly selected Home Assistant origin. It reads observations through WebSocket and does not issue device service commands. HTTPS origins become WSS; aiohttp performs certificate and hostname validation. The redirect callback rejects redirects before a redirected origin can receive the token. Tests exercise the actual aiohttp redirect path with synthetic responses.
 
-Use a trusted HTTPS origin for remote capture, with minimum account permissions. Plain HTTP remains available for explicitly configured trusted local networks and provides no transport confidentiality. A custom adapter's token provider is trusted code and can create other behavior. Tokens come from the environment or an explicitly supplied adapter and are not evidence fields. This optional transport has not been qualified for an exact minimum public-key size across every possible certificate chain; ordinary TLS verification alone does not prove that property.
+Use a trusted HTTPS origin for remote capture, with minimum account permissions. Plain HTTP remains available for explicitly configured trusted local networks and provides no transport confidentiality. A custom adapter's token provider is trusted code and can create other behavior. Tokens come from the environment or an explicitly supplied adapter and are not evidence fields. For stricter key policy, pass `--strict-tls` to the `record` command. This requires
+an HTTPS origin and OpenSSL 3 or newer. A shared aiohttp connector enforces TLS
+1.2+, normal certificate/hostname verification and OpenSSL security level at
+least 3 for WebSocket capture and any HTTPS requests made by the trusted adapter
+through the supplied session. RSA/DH keys below 3072 bits, EC keys below 256 bits
+and static RSA exchange are rejected. Stronger host policy and its cipher set
+are preserved; there is no plaintext fallback. Standard OpenSSL trust settings
+can supply a private CA whose complete chain meets this policy. The profile may
+reject older HA/proxy certificates. An adapter is still trusted Python and must
+not replace the supplied connector or disable verification.
+
+Synthetic memory-BIO TLS1.2/1.3 tests accept a strong certificate chain and reject
+2047-bit root, intermediate and leaf keys as weak, as well as an untrusted CA or
+wrong hostname. Capture tests verify the connector is shared with token retrieval.
+These are software tests, not a live household deployment.
 
 ## Delivery and assessment boundaries
 
