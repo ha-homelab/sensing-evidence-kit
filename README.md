@@ -53,6 +53,7 @@ The built-in adapter characterizes ordinary binary entities as `presence`, `quie
 - [Adapter API and integration](docs/adapters.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Scope and limitations](docs/beta.md)
+- [Security profiles](docs/security-profiles.md), [quality evidence](docs/quality.md), [governance](GOVERNANCE.md) and [roadmap](ROADMAP.md)
 - [Security](SECURITY.md), [contributing](CONTRIBUTING.md), [changelog](CHANGELOG.md)
 
 ## Develop and package
