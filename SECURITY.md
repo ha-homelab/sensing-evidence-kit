@@ -11,3 +11,5 @@ Tokens are read from the environment or an explicitly supplied adapter; they are
 This toolkit does not validate a detector for emergency, healthcare, security or other safety-critical use.
 
 The [supported profiles](docs/security-profiles.md) distinguish the complete offline workflow from optional live capture and describe the limits of each. An imported adapter is trusted executable code, not an untrusted evidence file.
+
+The vendored release helpers have a separate [verified release-client TLS profile](docs/release-tls-profile.md).

@@ -27,3 +27,5 @@ jobs:
       - name: Validate source and behavior
         run: |
           uv run --frozen --extra dev --extra record sh scripts/check.sh
+      - name: Build source and wheel distributions
+        run: uv run --frozen --extra dev python -m build
