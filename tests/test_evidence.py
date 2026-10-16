@@ -411,7 +411,7 @@ class DemoTests(FixtureTest):
 
 
 class CaptureTests(FixtureTest):
-    def run_capture(self, fail_read=False):
+    def run_capture(self, fail_read=False, strict_tls=False):
         import asyncio
         from unittest.mock import AsyncMock, Mock
 
@@ -443,9 +443,18 @@ class CaptureTests(FixtureTest):
             client_context = AsyncMock()
             client_context.__aenter__.return_value = client
             fake_aiohttp = SimpleNamespace(
-                ClientSession=Mock(return_value=client_context), ClientTimeout=Mock(), TraceConfig=Mock()
+                ClientSession=Mock(return_value=client_context),
+                ClientTimeout=Mock(),
+                TraceConfig=Mock(),
+                TCPConnector=Mock(),
             )
-            args = SimpleNamespace(directory=path, origin="https://ha.example.invalid", seconds=1, interval=1)
+            args = SimpleNamespace(
+                directory=path,
+                origin="https://ha.example.invalid",
+                seconds=1,
+                interval=1,
+                strict_tls=strict_tls,
+            )
             base = {
                 k: self.capture[0][k]
                 for k in (
@@ -480,6 +489,10 @@ class CaptureTests(FixtureTest):
                         asyncio.run(session.capture(args, self.adapter))
                 else:
                     asyncio.run(session.capture(args, self.adapter))
+            if strict_tls:
+                context = fake_aiohttp.TCPConnector.call_args.kwargs["ssl"]
+                self.assertGreaterEqual(context.security_level, 3)
+                self.assertTrue(context.check_hostname)
             rows = session.rows(path / "capture.jsonl")
             self.assertNotIn("synthetic-auth-only", (path / "capture.jsonl").read_text())
             self.assertEqual([c.args[0]["type"] for c in ws.send_json.call_args_list], ["auth", "get_states"])
@@ -491,6 +504,9 @@ class CaptureTests(FixtureTest):
         self.assertEqual(rows[-1]["samples"], 1)
         self.assertEqual(set(rows[0]["states"]), {"binary_sensor.sample_a"})
         self.assertNotIn("secret_note", rows[0]["states"]["binary_sensor.sample_a"]["attributes"])
+
+    def test_strict_capture_uses_verified_context(self):
+        self.assertEqual(self.run_capture(strict_tls=True)[-1]["kind"], "complete")
 
     def test_read_failure_records_interruption(self):
         rows = self.run_capture(fail_read=True)
@@ -541,3 +557,51 @@ class CaptureTests(FixtureTest):
                     self.assertNotIn("synthetic-auth-only", repr(dict(requests[0].headers)))
                     response.close.assert_called_once()
                     self.assertFalse((path / "capture.jsonl").exists())
+
+    def test_strict_capture_rejects_http_before_reading_session(self):
+        import asyncio
+
+        args = SimpleNamespace(origin="http://ha.example.invalid", strict_tls=True)
+        with patch.object(session, "read_json") as read, self.assertRaisesRegex(ValueError, "HTTPS origin"):
+            asyncio.run(session.capture(args, self.adapter))
+        read.assert_not_called()
+
+    def test_token_provider_uses_same_strict_session_as_websocket(self):
+        import asyncio
+        import aiohttp
+
+        base = {
+            key: self.capture[0][key]
+            for key in ("schema_version", "session_id", "host_id", "boot_id", "observed_utc", "monotonic_ns")
+        }
+        clients = []
+
+        async def token_provider(client, origin):
+            self.assertEqual(origin, "https://ha.example.invalid")
+            self.assertGreaterEqual(client.connector._ssl.security_level, 3)
+            self.assertTrue(client.connector._ssl.check_hostname)
+            clients.append(client)
+            return "synthetic-token-only"
+
+        self.adapter.access_token = token_provider
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)
+            session.write_json(path / "metadata.json", self.metadata)
+            args = SimpleNamespace(
+                directory=path, origin="https://ha.example.invalid", seconds=1, interval=1, strict_tls=True
+            )
+            with (
+                patch.dict("os.environ", {"HA_TOKEN": ""}),
+                patch.object(session, "new_record", return_value=base),
+                patch.object(
+                    aiohttp.ClientSession,
+                    "ws_connect",
+                    autospec=True,
+                    side_effect=ValueError("synthetic stop before network"),
+                ) as connect,
+                self.assertRaisesRegex(ValueError, "synthetic stop before network"),
+            ):
+                asyncio.run(session.capture(args, self.adapter))
+            self.assertEqual(len(clients), 1)
+            self.assertIs(connect.call_args.args[0], clients[0])
+            self.assertFalse((path / "capture.jsonl").exists())

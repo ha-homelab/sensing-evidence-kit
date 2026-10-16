@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Add `record --strict-tls` to require an HTTPS origin and one verified
+  OpenSSL3 security-level3 connector for capture and adapter token requests.
+- Validate certificate-chain key floors, trust and hostnames with real synthetic
+  TLS handshakes; retain the documented default local-network compatibility.
+
 - Update the source-build backend to setuptools 83.0.0 for the upstream Unicode MANIFEST normalization fix (GHSA-h35f-9h28-mq5c).
 - Align security support with stable releases, document private reporting and distinguish the complete offline workflow from optional live capture.
 - Document contribution, conduct, governance and maintenance priorities, including the missing backup-maintainer arrangement.

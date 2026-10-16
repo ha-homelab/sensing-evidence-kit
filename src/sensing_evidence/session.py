@@ -22,6 +22,8 @@ import time
 from types import SimpleNamespace
 from urllib.parse import urlsplit
 
+from .tls import client_context
+
 MAX_FILE_BYTES = 256 * 1024 * 1024
 
 PHASES = ("empty_calibration", "still", "walking", "adjacent_target_empty", "empty_recovery")
@@ -307,6 +309,9 @@ async def capture(args, adapter):
         or url.fragment
     ):
         raise ValueError("Provide an HTTP(S) origin without credentials, path, query or fragment")
+    strict_tls = getattr(args, "strict_tls", False)
+    if strict_tls and url.scheme != "https":
+        raise ValueError("Strict TLS capture requires an HTTPS origin")
     origin = args.origin.rstrip("/")
     metadata = read_json(args.directory / "metadata.json")
     verify_contract(metadata, adapter)
@@ -315,7 +320,9 @@ async def capture(args, adapter):
     trace = aiohttp.TraceConfig()
     trace.on_request_redirect.append(reject_capture_redirect)
     async with aiohttp.ClientSession(
-        timeout=aiohttp.ClientTimeout(total=20), trace_configs=[trace]
+        timeout=aiohttp.ClientTimeout(total=20),
+        trace_configs=[trace],
+        connector=aiohttp.TCPConnector(ssl=client_context(strict=strict_tls)),
     ) as client:
         if not token:
             if not hasattr(adapter, "access_token"):
@@ -686,6 +693,9 @@ def main(adapter=None, argv=None):
     init.add_argument("--transition-seconds", type=positive_number, default=5)
     record = commands.add_parser("record", help="Read-only bounded HA snapshot capture; needs aiohttp")
     record.add_argument("--origin", required=True)
+    record.add_argument(
+        "--strict-tls", action="store_true", help="Require HTTPS and OpenSSL 3 security level at least 3"
+    )
     record.add_argument("--seconds", type=positive_number, required=True)
     record.add_argument("--interval", type=positive_number, default=2)
     label = commands.add_parser("mark", help="Append a human observation, independent of predictions")
