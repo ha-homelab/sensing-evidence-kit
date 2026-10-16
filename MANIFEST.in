@@ -6,4 +6,5 @@ recursive-include scripts *.py *.sh
 recursive-include LICENSES *.txt
 
 include RELEASING.md .release-policy.json uv.lock
+include GOVERNANCE.md CODE_OF_CONDUCT.md ROADMAP.md
 recursive-include .github *.py *.yml *.yaml *.txt

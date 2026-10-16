@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+- Update the source-build backend to setuptools 83.0.0 for the upstream Unicode MANIFEST normalization fix (GHSA-h35f-9h28-mq5c).
+- Align security support with stable releases, document private reporting and distinguish the complete offline workflow from optional live capture.
+- Document contribution, conduct, governance and maintenance priorities, including the missing backup-maintainer arrangement.
+
 ## [0.1.0] - 2026-10-15
 
 Initial public beta:
