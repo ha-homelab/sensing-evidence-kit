@@ -1,15 +1,20 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.1] - 2026-10-17
 
-- Add `record --strict-tls` to require an HTTPS origin and one verified
-  OpenSSL3 security-level3 connector for capture and adapter token requests.
-- Validate certificate-chain key floors, trust and hostnames with real synthetic
-  TLS handshakes; retain the documented default local-network compatibility.
+### Changed
 
-- Update the source-build backend to setuptools 83.0.0 for the upstream Unicode MANIFEST normalization fix (GHSA-h35f-9h28-mq5c).
-- Align security support with stable releases, document private reporting and distinguish the complete offline workflow from optional live capture.
-- Document contribution, conduct, governance and maintenance priorities, including the missing backup-maintainer arrangement.
+- Add optional `record --strict-tls` capture with a verified HTTPS-only OpenSSL 3 security-level-3 connector shared by capture and adapter token requests.
+- Update the source-build backend to setuptools 83.0.0 and use qualified canonical clients for signed release publication.
+- Document Python warning review, maintenance, private reporting and the limits of offline evidence.
+
+### Upgrade
+
+Install the verified wheel or source distribution in an isolated environment and retain the previous version for rollback. Enable strict TLS explicitly when the endpoint and certificate chain meet its requirements. Existing default local-network compatibility and report semantics remain unchanged.
+
+### Security
+
+Strict mode verifies certificate-chain key floors, trust and hostnames with synthetic TLS-handshake regressions. The build-backend update includes the upstream Unicode MANIFEST normalization fix (GHSA-h35f-9h28-mq5c). Published reports still do not claim live sensing accuracy or contain private installation inventory.
 
 ## [0.1.0] - 2026-10-15
 
