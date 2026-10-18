@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sensing-evidence-kit"
-version = "0.1.1"
+version = "0.1.2"
 description = "Reproducible sensing observations, independent labels and conservative characterization"
 readme = "README.md"
 requires-python = ">=3.11"

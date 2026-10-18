@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.2] - 2026-10-18
+
+### Changed
+
+- Restore Dependabot approval automation by routing default-branch dependency PR metadata through the trusted target workflow. Trusted-author, draft and opt-in label checks remain enforced; the approval job does not execute PR code.
+- Synchronize package version fields for this CI maintenance release.
+
+### Upgrade
+
+Install the verified package in an isolated environment. Keep capture configuration and the previous version for rollback.
+
+### Security
+
+Independent labels, expiry handling and configured TLS verification remain in force. Release checks use synthetic inputs and do not establish live sensing accuracy.
+
 ## [0.1.1] - 2026-10-17
 
 ### Changed
