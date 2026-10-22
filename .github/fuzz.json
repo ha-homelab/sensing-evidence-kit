@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "language": "python",
+  "setup": [
+    [
+      "python3",
+      "-m",
+      "venv",
+      ".fuzz-venv"
+    ],
+    [
+      ".fuzz-venv/bin/python",
+      "-m",
+      "pip",
+      "install",
+      "--require-hashes",
+      "--only-binary=:all:",
+      "-r",
+      ".github/requirements-fuzz.txt"
+    ]
+  ],
+  "targets": [
+    {
+      "name": "evidence-clock",
+      "engine": "atheris",
+      "command": [
+        ".fuzz-venv/bin/python",
+        "fuzz/fuzz_evidence_clock.py",
+        "-max_len=8192"
+      ],
+      "seconds": 60,
+      "corpus": "fuzz/corpus/evidence-clock",
+      "instrumentation": [
+        {
+          "module": "sensing_evidence.session",
+          "functions": [
+            "strict_json",
+            "validate_anchor",
+            "checked_time"
+          ]
+        }
+      ]
+    }
+  ],
+  "preflight-paths": [
+    "src/sensing_evidence",
+    "fuzz",
+    "tests"
+  ]
+}

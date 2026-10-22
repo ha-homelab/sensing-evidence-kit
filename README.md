@@ -1,5 +1,7 @@
 # Sensing Evidence Kit
 
+[![RC fuzzing](https://img.shields.io/badge/fuzzing-RC_only-0a9f8f)](docs/fuzzing.md)
+
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/15580/badge)](https://www.bestpractices.dev/projects/15580)
 
 **Characterization, not automatic validation.**

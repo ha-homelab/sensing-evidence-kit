@@ -555,7 +555,9 @@ class CaptureTests(FixtureTest):
                     self.assertEqual(len(requests), 1)
                     self.assertEqual(str(requests[0].url), "wss://ha.example.invalid/api/websocket")
                     self.assertNotIn("synthetic-auth-only", repr(dict(requests[0].headers)))
-                    response.close.assert_called_once()
+                    # Redirect rejection must close the response; aiohttp may
+                    # also repeat this idempotent cleanup in its error handler.
+                    response.close.assert_called()
                     self.assertFalse((path / "capture.jsonl").exists())
 
     def test_strict_capture_rejects_http_before_reading_session(self):
