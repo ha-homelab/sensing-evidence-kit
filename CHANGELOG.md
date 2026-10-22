@@ -12,6 +12,8 @@ Install the verified release package using the existing procedure. Retain config
 
 ### Security
 
+- Upgrade the optional capture/test dependency to aiohttp 3.14.4 to address denial-of-service advisories.
+
 The shared fuzz job uses no credentials or live household data and runs target mutation without network access. Passing synthetic checks does not establish physical-device compatibility or sensing accuracy.
 
 ## [0.1.2] - 2026-10-18
