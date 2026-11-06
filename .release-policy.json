@@ -6,7 +6,8 @@
   "version_file": "version",
   "validation_workflows": [
     "tests.yml",
-    "security.yml"
+    "security.yml",
+    "documentation.yml"
   ],
   "artifact_pattern": "release-assets*",
   "local_checks": [
@@ -14,7 +15,10 @@
   ],
   "notes": [
     "Examples and screenshots are synthetic. Site configuration, credentials, real observations and private Git history are excluded.",
-    "Offline tests cover simulated boundaries. A beta release does not establish compatibility with every camera, network or Home Assistant installation."
+    "Offline tests cover simulated boundaries. A beta release does not establish compatibility with every camera, network or Home Assistant installation.",
+    "Documentation-only routing preserves full validation for semantic package readme metadata: README.md. Ordinary archive copies remain documentation-scoped.",
+    "The configured release-note file remains a full-validation input so its current release section, upgrade notes and security notes are checked.",
+    "Documentation-consuming checks remain active on documentation-only PRs through the lightweight documentation validator."
   ],
   "release_notes": "CHANGELOG.md",
   "single_entry_ci": true,
@@ -72,5 +76,19 @@
   "sign_releases": true,
   "fuzzing": {
     "toolkit_ref": "2fbec331f2b14c46912cc7055a3477de923c4652"
+  },
+  "change_scope": {
+    "documentation_paths": [
+      "GOVERNANCE.md",
+      "ROADMAP.md"
+    ],
+    "required_paths": [
+      "CHANGELOG.md",
+      "README.md"
+    ],
+    "always_validate_workflows": [
+      "security.yml",
+      "documentation.yml"
+    ]
   }
 }
