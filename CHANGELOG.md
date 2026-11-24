@@ -1,7 +1,31 @@
 # Changelog
 
-## [0.1.3] - Unreleased
+## [0.1.4] - Unreleased
 
+### Changed
+
+- add a navigation index for docs/.
+- preserve merge identity and withdrawn auto-merge requests (#53).
+- verify current default branch before reviewed merges (#49).
+- complete reviewed dependency approval and merge wiring (#48).
+- use the shared CI regeneration guide (#46).
+- skip heavy validation for documentation-only changes (#45).
+- Complete dependency update migration to Renovate (#44).
+- consolidate current action and toolkit pins (#43).
+- recheck automatic publication source (#42).
+- reconcile lost creation responses (#41).
+
+### Upgrade
+
+Install the verified release package using the existing procedure. Retain configuration and the previous package for rollback; no configuration migration is required.
+
+### Security
+
+- Upgrade the optional capture/test dependency to aiohttp 3.14.4 to address denial-of-service advisories.
+
+The shared fuzz job uses no credentials or live household data and runs target mutation without network access. Passing synthetic checks does not establish physical-device compatibility or sensing accuracy.
+
+## [0.1.3] - 2026-10-22
 ### Changed
 
 - Add bounded, offline production-boundary fuzzing to public release candidates, with source-bound reports and committed regression seeds.
